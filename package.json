@@ -50,8 +50,8 @@
   "main": "public/electron.js",
   "scripts": {
     "start": "rescripts start",
-    "build": "rescripts build && tsc ./public/api/*.ts",
-    "build-api": "tsc ./public/api/*.ts",
+    "build": "rescripts build && tsc ./src/api/*.ts --outDir ./public/api",
+    "build-api": "tsc ./src/api/*.ts --outDir ./public/api",
     "test": "rescripts test",
     "eject": "react-scripts eject",
     "electron-dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
