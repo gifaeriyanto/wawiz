@@ -12,7 +12,7 @@ import {
 import AuthModal, { AuthFormData } from 'components/authModal';
 import firebase from 'firebase/app';
 import React from 'react';
-import illustration from 'static/images/illustration-onboarding.png';
+import illustration from 'static/images/illustration-onboarding.svg';
 import logo from 'static/images/logo.svg';
 import { auth } from 'utils/firebase';
 
