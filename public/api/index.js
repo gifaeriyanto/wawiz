@@ -37,7 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 exports.__esModule = true;
 exports.app = void 0;
-var whatsapp_1 = require("./utils/whatsapp");
+var whatsapp_1 = require("./whatsapp");
 var express = require('express');
 var Store = require('electron-store');
 var store = new Store();
@@ -51,11 +51,6 @@ var venomInit = function (_req, _res, next) { return __awaiter(void 0, void 0, v
                 return [4 /*yield*/, whatsapp_1["default"].sessionCreate(store.get('token'))];
             case 1:
                 client = _a.sent();
-                client.onStateChange(function (state) {
-                    if (state === 'CONNECTED') {
-                        console.log('yeyyyyyy');
-                    }
-                });
                 _a.label = 2;
             case 2:
                 next();
@@ -66,13 +61,19 @@ var venomInit = function (_req, _res, next) { return __awaiter(void 0, void 0, v
 exports.app.use(venomInit);
 exports.app.get('/', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        // client.waitForQrCodeScan((qrCode) => {
-        // });
-        res.json({ success: true, qrCode: store.get('token') });
+        res.json({ success: true });
         return [2 /*return*/];
     });
 }); });
-exports.app.get('/token', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
+exports.app.get('/qr-code', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        client.waitForQrCodeScan(function (qrCode) {
+            res.json({ qrCode: qrCode });
+        });
+        return [2 /*return*/];
+    });
+}); });
+exports.app.get('/get-token', function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var token;
     return __generator(this, function (_a) {
         switch (_a.label) {

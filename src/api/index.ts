@@ -1,5 +1,5 @@
 import { Whatsapp } from 'venom-bot';
-import waUtils from './utils/whatsapp';
+import waUtils from './whatsapp';
 const express = require('express');
 const Store = require('electron-store');
 
@@ -45,7 +45,7 @@ app.get('/get-groups', async (_req: any, res: any) => {
   res.json({ data });
 });
 
-app.get('/get-group-members/:id', async (req: any, res) => {
+app.get('/get-group-members/:id', async (req: any, res: any) => {
   waUtils
     .getGroupMembers(client, req.params.id)
     .then((data) => res.json({ count: data.length, data }))
