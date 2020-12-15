@@ -15,7 +15,7 @@ const IndexPage: React.FC = () => {
 
   return (
     <>
-      <Link to="/login">Login</Link>
+      <Link to="/auth">Login</Link>
       <Link to="/">Dashboard</Link>
 
       <br />

@@ -96,7 +96,7 @@ const AuthPage: React.FC = () => {
       <AuthModal
         isOpen={isOpenLogin}
         onClose={onCloseLogin}
-        onSubmit={(e) => handleAuth(e, true)}
+        onSubmit={(formData) => handleAuth(formData, true)}
         isLogin
       />
 

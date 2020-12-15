@@ -46,7 +46,11 @@ const AuthModal: React.FC<AuthModalProps> = ({
         </ModalHeader>
         <ModalCloseButton _focus={{ boxShadow: 'none' }} />
         <ModalBody px="32px" py="42px">
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form
+            onSubmit={handleSubmit((formData: AuthFormData) => {
+              onSubmit(formData);
+            })}
+          >
             <VStack spacing={4}>
               <FormControl id="email" isInvalid={errors.email}>
                 <FormLabel>Email address</FormLabel>
@@ -54,6 +58,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
                   type="text"
                   name="email"
                   placeholder="e.g. fulan@gmail.com"
+                  autoComplete="email"
                   ref={register({
                     required: errorMessages({ attr: 'email' }).required,
                     pattern: {
@@ -69,6 +74,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
                 <PasswordInput
                   name="password"
                   placeholder="*****"
+                  autoComplete="current-password"
                   ref={register({
                     required: errorMessages({ attr: 'password' }).required,
                     minLength: {
