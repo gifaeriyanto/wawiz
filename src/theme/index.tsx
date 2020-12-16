@@ -19,6 +19,7 @@ const theme = extendTheme({
     global: {
       body: {
         color: '#363636',
+        fontWeight: 500,
       },
     },
   },
