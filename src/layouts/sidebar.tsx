@@ -13,6 +13,10 @@ import { RiSearchLine } from 'react-icons/ri';
 
 const Sidebar: React.FC = () => {
   const [activeList, setActiveList] = useState<number | undefined>();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) =>
+    setSearchQuery(e.target.value);
 
   return (
     <Box
@@ -47,51 +51,32 @@ const Sidebar: React.FC = () => {
             borderRadius="none"
             borderX="none"
             borderTop="none"
+            value={searchQuery}
+            onChange={handleSearch}
           />
         </InputGroup>
       </Box>
 
       <Box overflowY="auto" maxH="calc(100vh - 144px)">
-        {[
-          1,
-          2,
-          3,
-          2,
-          3,
-          2,
-          3,
-          2,
-          3,
-          2,
-          3,
-          2,
-          3,
-          2,
-          3,
-          2,
-          3,
-          2,
-          3,
-          2,
-          3,
-          2,
-          3,
-          2,
-          3,
-          2,
-          3,
-        ].map((_, index) => (
-          <SidebarListItem
-            title="lorem ipsum dolor sit amet"
-            sentCount={1022}
-            image="https://cf.shopee.ph/file/1c27b88a68d6d16cda8a9c9cdd7bfafc"
-            key={index}
-            isActive={index === activeList}
-            onClick={() => {
-              setActiveList(index);
-            }}
-          />
-        ))}
+        {Array(5)
+          .fill({
+            title: 'Lorem ipsum dor sit amet constectator',
+            sentCount: 1022,
+            image: 'https://cf.shopee.ph/file/1c27b88a68d6d16cda8a9c9cdd7bfafc',
+          })
+          .filter((item) => item.title.toLowerCase().match(searchQuery, 'g'))
+          .map((item, index) => (
+            <SidebarListItem
+              title={item.title}
+              sentCount={item.sentCount}
+              image={item.image}
+              key={index}
+              isActive={index === activeList}
+              onClick={() => {
+                setActiveList(index);
+              }}
+            />
+          ))}
       </Box>
     </Box>
   );
