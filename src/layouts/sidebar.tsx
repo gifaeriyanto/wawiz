@@ -1,19 +1,39 @@
 import {
   Avatar,
   Box,
+  Button,
   Flex,
   Input,
   InputGroup,
   InputLeftElement,
   Text,
 } from '@chakra-ui/react';
+import { authState } from 'atoms/auth';
+import { broadcastListState } from 'atoms/sidebar';
+import { waState, waStateFormatted } from 'atoms/waState';
 import BroadcastList from 'components/broadcastList';
+import { BroadcastListData } from 'interfaces/broadcast';
 import React, { useState } from 'react';
 import { RiSearchLine } from 'react-icons/ri';
+import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
+import { auth } from 'utils/firebase';
+
+const data: BroadcastListData[] = [];
 
 const Sidebar: React.FC = () => {
-  const [activeList, setActiveList] = useState<number | undefined>();
+  const [broadcastListActiveId, setBroadcastListActiveId] = useRecoilState(
+    broadcastListState,
+  );
+  const waStatus = useRecoilValue(waStateFormatted);
   const [searchQuery, setSearchQuery] = useState('');
+  const filterRegex = new RegExp(searchQuery, 'gi');
+
+  const handleLogout = useRecoilCallback(({ reset }) => () => {
+    auth.signOut().then(() => {
+      reset(waState);
+      reset(authState);
+    });
+  });
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) =>
     setSearchQuery(e.target.value);
@@ -37,47 +57,64 @@ const Sidebar: React.FC = () => {
             Gifa Eriyanto
           </Text>
           <Text fontSize="14px" color="gray.500">
-            Basic
+            {waStatus}
           </Text>
         </Box>
       </Flex>
 
-      <Box>
-        <InputGroup>
-          <InputLeftElement pointerEvents="none" children={<RiSearchLine />} />
-          <Input
-            placeholder="Search"
-            size="sm"
-            borderRadius="none"
-            borderX="none"
-            borderTop="none"
-            value={searchQuery}
-            onChange={handleSearch}
-          />
-        </InputGroup>
-      </Box>
+      {data.length ? (
+        <Box>
+          <InputGroup>
+            <InputLeftElement
+              pointerEvents="none"
+              children={<RiSearchLine />}
+              color="gray.400"
+            />
+            <Input
+              placeholder="Search"
+              size="sm"
+              borderRadius="none"
+              borderX="none"
+              borderTop="none"
+              value={searchQuery}
+              onChange={handleSearch}
+            />
+          </InputGroup>
+        </Box>
+      ) : null}
 
       <Box overflowY="auto" maxH="calc(100vh - 144px)">
-        {Array(5)
-          .fill({
-            title: 'Lorem ipsum dor sit amet constectator',
-            sentCount: 1022,
-            image: 'https://cf.shopee.ph/file/1c27b88a68d6d16cda8a9c9cdd7bfafc',
-          })
-          .filter((item) => item.title.toLowerCase().match(searchQuery, 'g'))
-          .map((item, index) => (
-            <BroadcastList
-              title={item.title}
-              sentCount={item.sentCount}
-              image={item.image}
-              key={index}
-              isActive={index === activeList}
-              onClick={() => {
-                setActiveList(index);
-              }}
-            />
-          ))}
+        {data.length ? (
+          data
+            .filter((item) => item.title.match(filterRegex))
+            .map((item, index) => (
+              <BroadcastList
+                title={item.title}
+                sentCount={item.sentCount}
+                image={item.image}
+                key={index}
+                isActive={index === broadcastListActiveId}
+                onClick={() => {
+                  setBroadcastListActiveId(index);
+                }}
+              />
+            ))
+        ) : (
+          <Box
+            fontSize="sm"
+            textAlign="center"
+            color="gray.500"
+            p={8}
+            mt="25vh"
+          >
+            <Text mb={4}>Your broadcast list is empty</Text>
+            <Button colorScheme="green" size="sm">
+              Create a broadcast
+            </Button>
+          </Box>
+        )}
       </Box>
+      <Button onClick={handleLogout}>Logout</Button>
     </Box>
   );
 };

@@ -1,97 +1,49 @@
-import LoadingPage from 'components/loadingPage';
-import firebase from 'firebase/app';
-import { createContext, useContext, useEffect, useState } from 'react';
-import {
-  useHistory,
-  useLocation,
-  Redirect,
-  Route,
-  RouteProps,
-} from 'react-router-dom';
+import { authState } from 'atoms/auth';
+import Blocker from 'components/blocker';
+import { useEffect } from 'react';
+import { useHistory, useLocation, Redirect } from 'react-router-dom';
+import { useRecoilState } from 'recoil';
 import { auth } from 'utils/firebase';
 
-interface AuthContextState {
-  isFetching: boolean;
-  user: firebase.User | undefined | null;
-  setUser: (user: firebase.User | undefined) => void;
-}
+const PUBLIC_PATH = ['/auth'];
 
-export const AuthContext = createContext<AuthContextState>({
-  isFetching: true,
-  user: undefined,
-  setUser: () => undefined,
-});
-
-export const ProvideAuth: React.FC = ({ children }) => {
-  const [user, setUser] = useState<firebase.User | undefined | null>(null);
-  const [isFetching, setIsFetching] = useState(true);
+export const RouteSubscribe: React.FC = () => {
+  const [authStatus, setAuthStatus] = useRecoilState(authState);
+  const history = useHistory();
+  const location = useLocation();
+  const { from } = (location.state as any) || { from: { pathname: '/' } };
 
   useEffect(() => {
-    auth.onAuthStateChanged((currentUser) => {
-      if (currentUser) {
-        setUser(currentUser);
+    auth.onAuthStateChanged((currentState) => {
+      if (currentState) {
+        setAuthStatus('auth');
       } else {
-        setUser(undefined);
+        setAuthStatus('un-auth');
       }
     });
   }, []);
 
-  useEffect(() => {
-    if (isFetching && user !== null) {
-      setIsFetching(false);
-    }
-  }, [user]);
+  switch (authStatus) {
+    case 'initializing':
+      return <Blocker isLoading />;
 
-  return (
-    <AuthContext.Provider
-      value={{
-        isFetching,
-        user,
-        setUser,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
-  );
-};
+    case 'auth':
+      if (PUBLIC_PATH.includes(location.pathname)) {
+        history.replace(from);
+      }
+      return null;
 
-export const PrivateRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
-  const { user, isFetching } = useContext(AuthContext);
-
-  const render = ({ location }: any) => {
-    if (isFetching) {
-      return <LoadingPage />;
-    }
-
-    if (user) {
-      return children;
-    }
-
-    return (
-      <Redirect
-        to={{
-          pathname: '/auth',
-          state: { from: location },
-        }}
-      />
-    );
-  };
-
-  return <Route {...rest} render={render} />;
-};
-
-export const PublicRoute: React.FC<RouteProps> = ({ children, ...rest }) => {
-  const history = useHistory();
-  const loc = useLocation();
-  const { from } = (loc.state as any) || { from: { pathname: '/' } };
-
-  const { user } = useContext(AuthContext);
-
-  useEffect(() => {
-    if (history && user && from) {
-      history.replace(from);
-    }
-  }, [user, history, from]);
-
-  return <Route {...rest} render={() => children} />;
+    case 'un-auth':
+      if (!PUBLIC_PATH.includes(location.pathname)) {
+        return (
+          <Redirect
+            to={{
+              pathname: '/auth',
+              state: { from: location.pathname },
+            }}
+          />
+        );
+      }
+      return null;
+  }
 };
