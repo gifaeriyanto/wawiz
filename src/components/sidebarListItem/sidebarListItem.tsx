@@ -61,6 +61,8 @@ const SidebarListItem: React.FC<SidebarListItemProps> = ({
             bgPos="center"
             bgSize="cover"
             borderRadius="md"
+            border="1px solid"
+            borderColor="gray.200"
           />
         </Box>
       </Flex>
