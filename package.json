@@ -44,6 +44,7 @@
     "react-icons": "^4.1.0",
     "react-router-dom": "^5.2.0",
     "react-scripts": "4.0.1",
+    "recoil": "^0.1.2",
     "sharp": "^0.26.3",
     "venom-bot": "^2.1.2"
   },
