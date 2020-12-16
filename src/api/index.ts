@@ -57,13 +57,14 @@ export const createServer = (electronApp: any) => {
     client
       ?.getSessionTokenBrowser()
       .then((token) => {
-        store.set('token', token);
+        if (token.WASecretBundle) {
+          store.set('token', token);
+        }
         res.json(
           electronApp.resToClient({ success: true, token: store.get('token') }),
         );
       })
       .catch((error) => {
-        store.delete('token');
         res.json(electronApp.resToClient({ success: false, error }));
       });
   });
