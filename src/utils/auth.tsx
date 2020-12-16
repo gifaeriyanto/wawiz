@@ -25,7 +25,7 @@ export const RouteSubscribe: React.FC = () => {
 
   switch (authStatus) {
     case 'initializing':
-      return <Blocker isLoading />;
+      return <Blocker isLoading>Initializing</Blocker>;
 
     case 'auth':
       if (PUBLIC_PATH.includes(location.pathname)) {

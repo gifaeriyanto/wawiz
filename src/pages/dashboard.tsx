@@ -29,46 +29,38 @@ const IndexPage: React.FC = () => {
     return () => clearInterval(intervalID);
   }, [handleRefreshQrCode]);
 
-  const renderBlocker = () => {
-    if (waStatus === 'connected') {
-      return null;
-    }
-
-    if (qrCode) {
-      return (
-        <Blocker>
-          <Box textAlign="center">
-            {qrCode && (
-              <Image src={qrCode} w="300px" alt="QR Code" mb={8} mx="auto" />
-            )}
-            <Box fontSize="lg" mb={8}>
-              Open Whatsapp in your smartphone and scan this QR code to connect!
-            </Box>
-            <Alert status="warning" borderRadius="md" maxW="300px" mx="auto">
-              <AlertIcon />
-              Need help?
-              <Link
-                ml={2}
-                color="red.500"
-                href="https://faq.whatsapp.com/general/download-and-installation/how-to-log-in-or-out/?lang=en"
-                isExternal
-              >
-                Follow this steps
-              </Link>
-            </Alert>
-          </Box>
-        </Blocker>
-      );
-    }
-
-    return <Blocker isLoading>{waStatus}</Blocker>;
-  };
-
   return (
     <Layouts>
       <Flex align="center" h="100vh" justify="center">
         <Box textAlign="center">
-          {renderBlocker()}
+          {qrCode ? (
+            <Blocker>
+              <Box textAlign="center">
+                <Image src={qrCode} w="300px" alt="QR Code" mb={8} mx="auto" />
+                <Box fontSize="lg" mb={8}>
+                  Open Whatsapp in your smartphone and scan this QR code to
+                  connect!
+                </Box>
+                <Alert
+                  status="warning"
+                  borderRadius="md"
+                  maxW="300px"
+                  mx="auto"
+                >
+                  <AlertIcon />
+                  Need help?
+                  <Link
+                    ml={2}
+                    color="red.500"
+                    href="https://faq.whatsapp.com/general/download-and-installation/how-to-log-in-or-out/?lang=en"
+                    isExternal
+                  >
+                    Follow this steps
+                  </Link>
+                </Alert>
+              </Box>
+            </Blocker>
+          ) : null}
           <Image src={illustration} alt="Launch WA" mb={8} />
         </Box>
       </Flex>
