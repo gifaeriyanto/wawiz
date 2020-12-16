@@ -58,8 +58,9 @@
     "build-api": "tsc ./src/api/*.ts --outDir ./public/api",
     "test": "rescripts test",
     "eject": "react-scripts eject",
-    "electron-dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
     "postinstall": "electron-builder install-app-deps",
+    "electron-dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && electron .\"",
+    "dev": "yarn electron-dev",
     "electron-pack": "yarn build && rm -rf dist && build -mw"
   },
   "eslintConfig": {
