@@ -1,13 +1,14 @@
 import { create, Id, Whatsapp } from 'venom-bot';
+import { tokenSession } from 'venom-bot/dist/config/tokenSession.config';
 
-export const sessionCreate = async (browserSession?: object) => {
+export const sessionCreate = async (browserSession?: tokenSession) => {
   return new Promise<Whatsapp>((resolve, reject) => {
     create(
-      'wablast',
+      'wawiz',
       undefined,
       undefined,
       {
-        headless: false,
+        headless: true,
         logQR: false,
         mkdirFolderToken: '/public',
         waitForLogin: false,
@@ -28,26 +29,7 @@ type groupMembers = {
   name: string;
 }[];
 
-export const getGroupMembers = (client: Whatsapp, groupId: string) => {
-  return new Promise<groupMembers>(async (resolve, reject) => {
-    let result: groupMembers = [];
-    try {
-      await client.getGroupMembers(groupId).then((res) => {
-        result = res
-          .filter(({ isMe }) => !isMe)
-          .map(({ id, name }) => ({
-            id,
-            name,
-          }));
-      });
-      resolve(result);
-    } catch (error) {
-      reject(error);
-    }
-  });
-};
-
-interface blastMessagesParams {
+interface BlastMessagesParams {
   client: Whatsapp;
   ids: groupMembers;
   text: string;
@@ -61,7 +43,7 @@ export const blastMessages = ({
   text,
   filepath,
   interval = 2000,
-}: blastMessagesParams) => {
+}: BlastMessagesParams) => {
   let counter = 0;
   const i = setInterval(() => {
     const id = ids[counter].id._serialized;
@@ -92,7 +74,6 @@ export const blastMessages = ({
 
 const waUtils = {
   sessionCreate,
-  getGroupMembers,
   blastMessages,
 };
 

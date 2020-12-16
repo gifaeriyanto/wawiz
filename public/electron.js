@@ -1,7 +1,8 @@
 const electron = require('electron');
+const API = require('./api');
+
 const app = electron.app;
 const BrowserWindow = electron.BrowserWindow;
-require('./api');
 
 const path = require('path');
 const isDev = require('electron-is-dev');
@@ -14,6 +15,7 @@ function createWindow() {
     height: 800,
     webPreferences: {
       nodeIntegration: true,
+      webSecurity: false,
     },
   });
   mainWindow.loadURL(
@@ -21,13 +23,15 @@ function createWindow() {
       ? 'http://localhost:3000'
       : `file://${path.join(__dirname, '../build/index.html')}`,
   );
-  if (isDev) {
-    // Open the DevTools.
-    //BrowserWindow.addDevToolsExtension('<location to your react chrome extension>');
-    mainWindow.webContents.openDevTools();
-  }
+
   mainWindow.on('closed', () => (mainWindow = null));
+
+  app.server = API.createServer(app);
 }
+
+app.resToClient = (res) => {
+  return res;
+};
 
 app.on('ready', createWindow);
 
