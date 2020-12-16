@@ -26,6 +26,7 @@ export interface AuthModalProps {
   onSubmit: (formData: AuthFormData) => void;
   isOpen: boolean;
   onClose: () => void;
+  isSubmitting: boolean;
   isLogin?: boolean;
 }
 
@@ -34,8 +35,9 @@ const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   onClose,
   isLogin,
+  isSubmitting,
 }) => {
-  const { handleSubmit, errors, register, formState } = useForm();
+  const { handleSubmit, errors, register } = useForm();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -55,6 +57,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
               <FormControl id="email" isInvalid={errors.email}>
                 <FormLabel>Email address</FormLabel>
                 <Input
+                  isDisabled={isSubmitting}
                   type="text"
                   name="email"
                   placeholder="e.g. fulan@gmail.com"
@@ -72,6 +75,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
               <FormControl id="password" isInvalid={errors.password}>
                 <FormLabel>Password</FormLabel>
                 <PasswordInput
+                  isDisabled={isSubmitting}
                   name="password"
                   placeholder="*****"
                   autoComplete="current-password"
@@ -94,7 +98,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
                   colorScheme="green"
                   mt={6}
                   isFullWidth
-                  isLoading={formState.isSubmitting}
+                  isLoading={isSubmitting}
                 >
                   Login
                 </Button>
@@ -108,7 +112,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
                 colorScheme="green"
                 mt={6}
                 isFullWidth
-                isLoading={formState.isSubmitting}
+                isLoading={isSubmitting}
               >
                 Sign Up
               </Button>
