@@ -1,6 +1,6 @@
 import { Button } from '@chakra-ui/react';
+import Layouts from 'layouts';
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
 import { AuthContext } from 'utils/auth';
 import { auth } from 'utils/firebase';
 
@@ -14,16 +14,9 @@ const IndexPage: React.FC = () => {
   };
 
   return (
-    <>
-      <Link to="/auth">Login</Link>
-      <Link to="/">Dashboard</Link>
-
-      <br />
-      <br />
-      <br />
-
+    <Layouts>
       <Button onClick={handleLogout}>Logout</Button>
-    </>
+    </Layouts>
   );
 };
 
