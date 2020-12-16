@@ -83,7 +83,11 @@ const Sidebar: React.FC = () => {
         </Box>
       ) : null}
 
-      <Box overflowY="auto" maxH="calc(100vh - 144px)">
+      <Box
+        overflowY="auto"
+        maxH={`calc(100vh - ${data.length ? 144 : 96}px)`}
+        h="100vh"
+      >
         {data.length ? (
           data
             .filter((item) => item.title.match(filterRegex))
@@ -100,21 +104,27 @@ const Sidebar: React.FC = () => {
               />
             ))
         ) : (
-          <Box
+          <Flex
             fontSize="sm"
-            textAlign="center"
+            justify="center"
+            align="center"
+            direction="column"
             color="gray.500"
             p={8}
-            mt="25vh"
+            h="100%"
           >
             <Text mb={4}>Your broadcast list is empty</Text>
             <Button colorScheme="green" size="sm">
               Create a broadcast
             </Button>
-          </Box>
+          </Flex>
         )}
       </Box>
-      <Button onClick={handleLogout}>Logout</Button>
+      <Flex justify="center">
+        <Button onClick={handleLogout} pos="absolute" bottom={8} zIndex="1">
+          Logout
+        </Button>
+      </Flex>
     </Box>
   );
 };
