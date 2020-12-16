@@ -1,13 +1,17 @@
 import { Box } from '@chakra-ui/react';
 import { waState } from 'atoms/waState';
 import Sidebar from 'layouts/sidebar';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRecoilCallback } from 'recoil';
 import { API } from 'utils/api';
 
 const Layouts: React.FC = ({ children }) => {
+  const [isReady, setIsReady] = useState(false);
+
   useEffect(() => {
-    API.get(`/start`);
+    API.get(`/start`).finally(() => {
+      setIsReady(true);
+    });
   }, []);
 
   const handleRefresh = useRecoilCallback(
@@ -22,9 +26,11 @@ const Layouts: React.FC = ({ children }) => {
   );
 
   useEffect(() => {
-    const intervalID = setInterval(handleRefresh, 2000);
-    return () => clearInterval(intervalID);
-  }, [handleRefresh]);
+    if (isReady) {
+      const intervalID = setInterval(handleRefresh, 2000);
+      return () => clearInterval(intervalID);
+    }
+  }, [handleRefresh, isReady]);
 
   return (
     <>
