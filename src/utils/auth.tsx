@@ -12,7 +12,7 @@ import { auth } from 'utils/firebase';
 
 interface AuthContextState {
   isFetching: boolean;
-  user: firebase.User | undefined;
+  user: firebase.User | undefined | null;
   setUser: (user: firebase.User | undefined) => void;
 }
 
@@ -23,13 +23,11 @@ export const AuthContext = createContext<AuthContextState>({
 });
 
 export const ProvideAuth: React.FC = ({ children }) => {
-  const [user, setUser] = useState<firebase.User | undefined>();
+  const [user, setUser] = useState<firebase.User | undefined | null>(null);
   const [isFetching, setIsFetching] = useState(true);
-  const [mount, setMount] = useState(0);
 
   useEffect(() => {
     auth.onAuthStateChanged((currentUser) => {
-      setMount(mount + 1);
       if (currentUser) {
         setUser(currentUser);
       } else {
@@ -39,11 +37,7 @@ export const ProvideAuth: React.FC = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    if (!mount) {
-      setMount(mount + 1);
-    }
-
-    if (isFetching && mount === 1) {
+    if (isFetching && user !== null) {
       setIsFetching(false);
     }
   }, [user]);

@@ -11,7 +11,7 @@ import {
 } from '@chakra-ui/react';
 import AuthModal, { AuthFormData } from 'components/authModal';
 import firebase from 'firebase/app';
-import React from 'react';
+import React, { useState } from 'react';
 import illustration from 'static/images/illustration-onboarding.svg';
 import logo from 'static/images/logo.svg';
 import { auth } from 'utils/firebase';
@@ -28,8 +28,10 @@ const AuthPage: React.FC = () => {
     onOpen: onOpenSignUp,
     onClose: onCloseSignUp,
   } = useDisclosure();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleAuth = (formData: AuthFormData, isLogin?: boolean) => {
+    setIsSubmitting(true);
     const { email, password } = formData;
 
     if (!email && !password) {
@@ -38,27 +40,37 @@ const AuthPage: React.FC = () => {
 
     auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
       if (isLogin) {
-        auth.signInWithEmailAndPassword(email, password).catch((error) => {
-          toast({
-            position: 'top',
-            title: 'Login failed',
-            description: error.message,
-            status: 'warning',
-            duration: 9000,
-            isClosable: true,
+        auth
+          .signInWithEmailAndPassword(email, password)
+          .catch((error) => {
+            toast({
+              position: 'top',
+              title: 'Login failed',
+              description: error.message,
+              status: 'warning',
+              duration: 9000,
+              isClosable: true,
+            });
+          })
+          .finally(() => {
+            setIsSubmitting(false);
           });
-        });
       } else {
-        auth.createUserWithEmailAndPassword(email, password).catch((error) => {
-          toast({
-            position: 'top',
-            title: 'Sign Up failed',
-            description: error.message,
-            status: 'warning',
-            duration: 9000,
-            isClosable: true,
+        auth
+          .createUserWithEmailAndPassword(email, password)
+          .catch((error) => {
+            toast({
+              position: 'top',
+              title: 'Sign Up failed',
+              description: error.message,
+              status: 'warning',
+              duration: 9000,
+              isClosable: true,
+            });
+          })
+          .finally(() => {
+            setIsSubmitting(false);
           });
-        });
       }
     });
   };
@@ -97,6 +109,7 @@ const AuthPage: React.FC = () => {
         isOpen={isOpenLogin}
         onClose={onCloseLogin}
         onSubmit={(formData) => handleAuth(formData, true)}
+        isSubmitting={isSubmitting}
         isLogin
       />
 
@@ -104,6 +117,7 @@ const AuthPage: React.FC = () => {
         isOpen={isOpenSignUp}
         onClose={onCloseSignUp}
         onSubmit={handleAuth}
+        isSubmitting={isSubmitting}
       />
     </>
   );
