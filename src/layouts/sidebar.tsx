@@ -7,7 +7,7 @@ import {
   InputLeftElement,
   Text,
 } from '@chakra-ui/react';
-import SidebarListItem from 'components/sidebarListItem';
+import BroadcastList from 'components/broadcastList';
 import React, { useState } from 'react';
 import { RiSearchLine } from 'react-icons/ri';
 
@@ -66,7 +66,7 @@ const Sidebar: React.FC = () => {
           })
           .filter((item) => item.title.toLowerCase().match(searchQuery, 'g'))
           .map((item, index) => (
-            <SidebarListItem
+            <BroadcastList
               title={item.title}
               sentCount={item.sentCount}
               image={item.image}

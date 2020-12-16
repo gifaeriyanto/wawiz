@@ -1,7 +1,7 @@
 import { Box, Flex } from '@chakra-ui/react';
 import React from 'react';
 
-export interface SidebarListItemProps {
+export interface BroadcastListProps {
   title: string;
   sentCount: number;
   image?: string;
@@ -9,7 +9,7 @@ export interface SidebarListItemProps {
   onClick?: () => void;
 }
 
-const SidebarListItem: React.FC<SidebarListItemProps> = ({
+const BroadcastList: React.FC<BroadcastListProps> = ({
   title,
   sentCount = 0,
   image,
@@ -70,4 +70,4 @@ const SidebarListItem: React.FC<SidebarListItemProps> = ({
   );
 };
 
-export default SidebarListItem;
+export default BroadcastList;
