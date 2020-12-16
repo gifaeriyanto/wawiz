@@ -4,7 +4,6 @@ import Sidebar from 'layouts/sidebar';
 import React, { useEffect } from 'react';
 import { useRecoilCallback } from 'recoil';
 import { API } from 'utils/api';
-import { auth } from 'utils/firebase';
 
 const Layouts: React.FC = ({ children }) => {
   useEffect(() => {
