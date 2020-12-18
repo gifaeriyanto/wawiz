@@ -1,6 +1,7 @@
 import { Alert, AlertIcon, Box, Image, Link as CLink } from '@chakra-ui/react';
 import { waQrCode, waState, waStateFormatted } from 'atoms/waState';
 import Blocker from 'components/blocker';
+import Navbar from 'layouts/navbar';
 import Sidebar from 'layouts/sidebar';
 import React, { useEffect, useState } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
@@ -90,8 +91,11 @@ const Layouts: React.FC = ({ children }) => {
     <>
       <Sidebar />
       <Box pl="300px" bgColor="green.50" minH="100vh">
+        <Navbar />
         {renderBlocker()}
-        {children}
+        <Box p={8} pt={0}>
+          {children}
+        </Box>
       </Box>
     </>
   );
