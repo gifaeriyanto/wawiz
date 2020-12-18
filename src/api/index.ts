@@ -1,14 +1,22 @@
 import { Whatsapp } from 'venom-bot';
-import waUtils from './whatsapp';
+import waUtils, { blastMessages } from './whatsapp';
 
 // tslint:disable: no-var-requires
 const express = require('express');
 const Store = require('electron-store');
+const cors = require('cors');
 
 const store = new Store();
 
 export const app = express();
 let client: Whatsapp | undefined;
+
+app.use(
+  cors({
+    origin: '*',
+    optionsSuccessStatus: 200,
+  }),
+);
 
 export const createServer = (electronApp: any) => {
   app.get('/', async (_req: any, res: any) => {
@@ -125,6 +133,38 @@ export const createServer = (electronApp: any) => {
       .catch((error) =>
         res.json(electronApp.resToClient({ success: false, error })),
       );
+  });
+
+  app.get('/reset', async (_req: any, res: any) => {
+    client = undefined;
+    store.delete('token');
+    res.json({
+      success: true,
+      token: store.get('token'),
+      client: Boolean(client),
+    });
+  });
+
+  app.post('/send-message', async (req: any, res: any) => {
+    const { id, message, filepath } = req.body;
+
+    client
+      ?.sendText(id, message)
+      .then(async () => {
+        console.log('Successfully sent message to', id);
+        if (filepath) {
+          client?.sendImage(id, filepath);
+        }
+
+        res.json({
+          success: true,
+          message: `Successfully sent message to ${id}`,
+          data: req.body,
+        });
+      })
+      .catch((err: any) => {
+        console.error('Error when sending: ', err);
+      });
   });
 
   app.listen(3001);
