@@ -8,15 +8,15 @@ import {
   InputLeftElement,
   Text,
 } from '@chakra-ui/react';
-import { authState } from 'atoms/auth';
 import { broadcastListState } from 'atoms/sidebar';
-import { waState, waStateFormatted } from 'atoms/waState';
+import { waStateFormatted } from 'atoms/waState';
 import BroadcastList from 'components/broadcastList';
 import { BroadcastListData } from 'interfaces/broadcast';
 import React, { useState } from 'react';
 import { RiSearchLine } from 'react-icons/ri';
-import { useRecoilCallback, useRecoilState, useRecoilValue } from 'recoil';
-import { auth } from 'utils/firebase';
+import { useHistory } from 'react-router-dom';
+import { useRecoilState, useRecoilValue } from 'recoil';
+import Routes from 'utils/routes';
 
 const data: BroadcastListData[] = [];
 
@@ -27,13 +27,7 @@ const Sidebar: React.FC = () => {
   const waStatus = useRecoilValue(waStateFormatted);
   const [searchQuery, setSearchQuery] = useState('');
   const filterRegex = new RegExp(searchQuery, 'gi');
-
-  const handleLogout = useRecoilCallback(({ reset }) => () => {
-    auth.signOut().then(() => {
-      reset(waState);
-      reset(authState);
-    });
-  });
+  const history = useHistory();
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) =>
     setSearchQuery(e.target.value);
@@ -114,17 +108,16 @@ const Sidebar: React.FC = () => {
             h="100%"
           >
             <Text mb={4}>Your broadcast list is empty</Text>
-            <Button colorScheme="green" size="sm">
+            <Button
+              colorScheme="green"
+              size="sm"
+              onClick={() => history.push(Routes.createBroadcast)}
+            >
               Create a broadcast
             </Button>
           </Flex>
         )}
       </Box>
-      <Flex justify="center">
-        <Button onClick={handleLogout} pos="absolute" bottom={8} zIndex="1">
-          Logout
-        </Button>
-      </Flex>
     </Box>
   );
 };
