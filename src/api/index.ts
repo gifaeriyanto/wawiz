@@ -5,6 +5,7 @@ import waUtils, { blastMessages } from './whatsapp';
 const express = require('express');
 const Store = require('electron-store');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 
 const store = new Store();
 
@@ -17,6 +18,8 @@ app.use(
     optionsSuccessStatus: 200,
   }),
 );
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 export const createServer = (electronApp: any) => {
   app.get('/', async (_req: any, res: any) => {
@@ -138,32 +141,42 @@ export const createServer = (electronApp: any) => {
   app.get('/reset', async (_req: any, res: any) => {
     client = undefined;
     store.delete('token');
-    res.json({
-      success: true,
-      token: store.get('token'),
-      client: Boolean(client),
-    });
+    res.json(
+      electronApp.resToClient({
+        success: true,
+        token: store.get('token'),
+        client: Boolean(client),
+      }),
+    );
   });
 
   app.post('/send-message', async (req: any, res: any) => {
     const { id, message, filepath } = req.body;
+    const chatId = id + '@c.us';
 
     client
-      ?.sendText(id, message)
+      ?.sendText(chatId, message)
       .then(async () => {
-        console.log('Successfully sent message to', id);
+        console.log('Successfully sent message to', chatId);
         if (filepath) {
-          client?.sendImage(id, filepath);
+          client?.sendImage(chatId, filepath);
         }
-
-        res.json({
-          success: true,
-          message: `Successfully sent message to ${id}`,
-          data: req.body,
-        });
+        res.json(
+          electronApp.resToClient({
+            success: true,
+            message: `Successfully sent message to ${chatId}`,
+            data: req.body,
+          }),
+        );
       })
-      .catch((err: any) => {
-        console.error('Error when sending: ', err);
+      .catch(() => {
+        res.json(
+          electronApp.resToClient({
+            success: false,
+            message: `Error sending to ${chatId}`,
+            data: req.body,
+          }),
+        );
       });
   });
 
