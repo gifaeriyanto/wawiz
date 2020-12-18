@@ -24,7 +24,7 @@ export const RouteSubscribe: React.FC = () => {
         setAuthStatus('un-auth');
       }
     });
-  }, []);
+  }, [setAuthStatus]);
 
   switch (authStatus) {
     case 'initializing':
