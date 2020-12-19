@@ -4,3 +4,9 @@ export interface BroadcastListData {
   sentCount: number;
   image?: string;
 }
+
+export interface RecipientData {
+  id: string;
+  number: string;
+  name?: string;
+}
