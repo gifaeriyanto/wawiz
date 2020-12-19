@@ -2,6 +2,7 @@ import { extendTheme } from '@chakra-ui/react';
 import ButtonTheme from 'theme/button';
 import colors from 'theme/colors';
 import InputTheme from 'theme/input';
+import TextareaTheme from 'theme/textarea';
 
 const theme = extendTheme({
   config: {
@@ -26,6 +27,7 @@ const theme = extendTheme({
   components: {
     Button: ButtonTheme,
     Input: InputTheme,
+    Textarea: TextareaTheme,
   },
 });
 
