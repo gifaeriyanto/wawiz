@@ -60,8 +60,8 @@
   "main": "public/electron.js",
   "scripts": {
     "start": "rescripts start",
-    "build": "rescripts build && tsc ./src/api/*.ts --outDir ./public/api",
-    "build-api": "tsc ./src/api/*.ts --outDir ./public/api",
+    "build": "rescripts build && tsc ./api/*.ts --outDir ./public/api",
+    "build-api": "tsc ./api/*.ts --outDir ./public/api",
     "test": "rescripts test",
     "eject": "react-scripts eject",
     "postinstall": "electron-builder install-app-deps",
