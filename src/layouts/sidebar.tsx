@@ -14,9 +14,7 @@ import BroadcastList from 'components/broadcastList';
 import { BroadcastListData } from 'interfaces/broadcast';
 import React, { useState } from 'react';
 import { RiSearchLine } from 'react-icons/ri';
-import { useHistory } from 'react-router-dom';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import Routes from 'utils/routes';
 
 const data: BroadcastListData[] = [];
 
@@ -27,7 +25,6 @@ const Sidebar: React.FC = () => {
   const waStatus = useRecoilValue(waStateFormatted);
   const [searchQuery, setSearchQuery] = useState('');
   const filterRegex = new RegExp(searchQuery, 'gi');
-  const history = useHistory();
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) =>
     setSearchQuery(e.target.value);
@@ -108,13 +105,6 @@ const Sidebar: React.FC = () => {
             h="100%"
           >
             <Text mb={4}>Your broadcast list is empty</Text>
-            <Button
-              colorScheme="green"
-              size="sm"
-              onClick={() => history.push(Routes.createBroadcast)}
-            >
-              Create a broadcast
-            </Button>
           </Flex>
         )}
       </Box>
