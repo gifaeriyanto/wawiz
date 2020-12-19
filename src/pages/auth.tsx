@@ -48,7 +48,7 @@ const AuthPage: React.FC = () => {
               title: 'Login failed',
               description: error.message,
               status: 'warning',
-              duration: 9000,
+              duration: 8000,
               isClosable: true,
             });
           })
@@ -64,7 +64,7 @@ const AuthPage: React.FC = () => {
               title: 'Sign Up failed',
               description: error.message,
               status: 'warning',
-              duration: 9000,
+              duration: 8000,
               isClosable: true,
             });
           })
