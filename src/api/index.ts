@@ -117,20 +117,36 @@ export const createServer = (electronApp: any) => {
       );
   });
 
-  app.get('/contacts', (_req: any, res: any) => {
+  app.get('/contacts/:page/:query?', (req: any, res: any) => {
+    const { page, query } = req.params;
+    const queryRegex = new RegExp(query, 'gi');
+
+    const pageSize = 20;
     client
       ?.getAllContacts()
       .then((contacts) => {
         const data = contacts
+          .filter(({ name }) => (query ? name?.match(queryRegex) : true))
           .filter(({ id, isMe }) => !isMe && id.server === 'c.us')
+          .slice((page - 1) * pageSize, page * pageSize)
           .map(({ id, name }) => {
             return {
               id,
               name,
             };
           });
+
+        const totalData = query ? data.length : contacts.length;
+        const totalPage = totalData / pageSize;
         res.json(
-          electronApp.resToClient({ success: true, count: data.length, data }),
+          electronApp.resToClient({
+            success: true,
+            count: data.length,
+            data,
+            totalData,
+            totalPage,
+            hasMore: req.params.page <= totalPage,
+          }),
         );
       })
       .catch((error) =>
