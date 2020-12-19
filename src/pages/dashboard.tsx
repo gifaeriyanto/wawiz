@@ -1,6 +1,4 @@
-import { Alert, AlertIcon, Box, Flex, Image, Link } from '@chakra-ui/react';
-import { waQrCode, waStateFormatted } from 'atoms/waState';
-import Blocker from 'components/blocker';
+import { Box, Flex, Image } from '@chakra-ui/react';
 import Layouts from 'layouts';
 import React from 'react';
 import illustration from 'static/images/launch-wa.svg';
