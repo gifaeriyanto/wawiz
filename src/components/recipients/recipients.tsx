@@ -1,10 +1,12 @@
 import {
   Box,
-  Checkbox,
   Flex,
   Input,
   InputGroup,
   InputLeftElement,
+  List,
+  ListIcon,
+  ListItem,
   Text,
 } from '@chakra-ui/react';
 import {
@@ -14,32 +16,16 @@ import {
 } from 'atoms/contacts';
 import { uniqBy } from 'lodash';
 import React, { useState } from 'react';
-import { RiSearchLine } from 'react-icons/ri';
+import { RiAddLine, RiSearchLine } from 'react-icons/ri';
 import InfiniteScroll from 'react-infinite-scroller';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { numberFormat } from 'utils/numberFormat';
 
 export interface RecipientsProps {
   onNext: (page: number, query?: string) => void;
-  onEnter: () => void;
+  onEnter: (query: string) => void;
   hasMore: boolean;
 }
-
-const CheckboxDefaultProps = {
-  size: 'lg',
-  colorScheme: 'green',
-  w: '100%',
-  py: 3,
-  sx: {
-    '.chakra-checkbox__label': {
-      w: '100%',
-      ml: 4,
-    },
-    '.chakra-checkbox__control[data-focus]': {
-      boxShadow: 'none !important',
-    },
-  },
-};
 
 const Recipients: React.FC<RecipientsProps> = ({
   onNext,
@@ -48,7 +34,7 @@ const Recipients: React.FC<RecipientsProps> = ({
 }) => {
   const [checkedItems, setCheckedItems] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
-  const [contacts, setContacts] = useRecoilState(contactsAtom);
+  const contacts = useRecoilValue(contactsAtom);
   const setContactsSelected = useSetRecoilState(contactsAtomSelected);
   const contactsNotSelected = useRecoilValue(contactsAtomNotSelected);
 
@@ -58,8 +44,7 @@ const Recipients: React.FC<RecipientsProps> = ({
 
   const handleSearchEnter = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      onEnter();
-      setContacts([]);
+      onEnter(searchQuery);
     }
   };
 
@@ -72,28 +57,49 @@ const Recipients: React.FC<RecipientsProps> = ({
   };
 
   const listItems = uniqBy(contactsNotSelected, 'id').map((contact) => (
-    <Box borderTop="1px solid" borderColor="gray.200" w="100%" key={contact.id}>
-      <Checkbox
-        onChange={() => handleCheckOne(contact.id)}
-        value={contact.id}
-        {...CheckboxDefaultProps}
-      >
-        {contact.name ? (
-          <Flex justify="space-between" align="center">
-            <Text fontSize="md" fontWeight="600">
-              {numberFormat(contact.number)}
-            </Text>
-            <Text fontSize="sm" color="gray.400" ml={4} textAlign="right">
-              {contact.name}
-            </Text>
-          </Flex>
-        ) : (
+    <ListItem
+      borderTop="1px solid"
+      borderColor="gray.200"
+      w="100%"
+      d="flex"
+      py={2}
+      alignItems="center"
+      cursor="pointer"
+      _hover={
+        {
+          svg: {
+            color: 'white',
+            bgColor: 'green.500',
+          },
+        } as any
+      }
+      key={contact.id}
+      onClick={() => handleCheckOne(contact.id)}
+    >
+      <ListIcon
+        as={RiAddLine}
+        color="gray.400"
+        bgColor="gray.100"
+        w={6}
+        h={6}
+        mr={4}
+        borderRadius="md"
+      />
+      {contact.name ? (
+        <Flex justify="space-between" align="center" w="100%">
           <Text fontSize="md" fontWeight="600">
             {numberFormat(contact.number)}
           </Text>
-        )}
-      </Checkbox>
-    </Box>
+          <Text fontSize="sm" color="gray.400" ml={4} textAlign="right">
+            {contact.name}
+          </Text>
+        </Flex>
+      ) : (
+        <Text fontSize="md" fontWeight="600">
+          {numberFormat(contact.number)}
+        </Text>
+      )}
+    </ListItem>
   ));
 
   return (
@@ -140,7 +146,7 @@ const Recipients: React.FC<RecipientsProps> = ({
           useWindow={false}
           threshold={100}
         >
-          {listItems}
+          <List>{listItems}</List>
         </InfiniteScroll>
       </Box>
     </>
