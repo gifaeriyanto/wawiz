@@ -17,10 +17,10 @@ import {
   Tooltip,
   VStack,
 } from '@chakra-ui/react';
+import { useContacts } from 'api/contacts';
 import { contactsAtom, contactsAtomSelected } from 'atoms/contacts';
 import { waState } from 'atoms/waState';
 import Recipients from 'components/recipients';
-import { RecipientData } from 'interfaces/broadcast';
 import Layouts from 'layouts';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -48,18 +48,21 @@ const CreateBroadcastPage: React.FC = () => {
     contactsAtomSelected,
   );
   const [hasMore, setHasMore] = useState(true);
-  const [isFetching, setIsFetching] = useState(false);
   const [page, setPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState('');
   const toast = useToast();
+
+  const { data, isFetching } = useContacts({ page, query: searchQuery });
 
   // Send interval
   const [isSending, setIsSending] = useState(false);
   const [count, setCount] = useState(0);
   const [formData, setFormData] = useState<BroadcastFormData | undefined>();
 
-  const handleReset = () => {
-    setHasMore(true);
+  const handleSearchEnter = (query: string) => {
+    setContacts([]);
     setPage(1);
+    setSearchQuery(query);
   };
 
   const removeContactSelected = (id: string) => {
@@ -72,34 +75,31 @@ const CreateBroadcastPage: React.FC = () => {
   };
 
   const handleGetContacts = (_page: number, query?: string) => {
+    console.log({ query });
     if (!hasMore) {
       return;
     }
-
-    setIsFetching(true);
-    API.get(`/contacts/${page}/${query}`)
-      .then(({ data: res }) => {
-        const parsed = (res.data || []).map((item: any) => {
-          return {
-            id: item.id._serialized,
-            name: item.name,
-            number: item.id.user,
-          } as RecipientData;
-        });
-
-        setHasMore(res.hasMore);
-
-        if (page > 1) {
-          setContacts([...contacts, ...parsed]);
-        } else {
-          setContacts(parsed);
-        }
-      })
-      .finally(() => {
-        setPage(page + 1);
-        setIsFetching(false);
-      });
+    setPage(page + 1);
   };
+
+  useEffect(() => {
+    if (!data) {
+      return;
+    }
+
+    setHasMore(data.hasMore);
+    if (page > 1) {
+      setContacts([...contacts, ...data.data]);
+    } else {
+      setContacts(data.data);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (isFetching) {
+      setHasMore(false);
+    }
+  }, [isFetching]);
 
   useInterval(
     () => {
@@ -134,10 +134,10 @@ const CreateBroadcastPage: React.FC = () => {
     }
   }, [count]);
 
-  const handleBroadcastSubmit = (data: BroadcastFormData) => {
-    if (data) {
+  const handleBroadcastSubmit = (broadcastData: BroadcastFormData) => {
+    if (broadcastData) {
       setCount(0);
-      setFormData(data);
+      setFormData(broadcastData);
       setIsSending(true);
     }
   };
@@ -156,7 +156,7 @@ const CreateBroadcastPage: React.FC = () => {
             <form onSubmit={handleSubmit(handleBroadcastSubmit)}>
               <VStack spacing={4}>
                 <FormControl id="id" isInvalid={errors.id}>
-                  <FormLabel>Number</FormLabel>
+                  <FormLabel>Add number</FormLabel>
                   <Input
                     isDisabled={isSending}
                     type="text"
@@ -175,10 +175,10 @@ const CreateBroadcastPage: React.FC = () => {
                         <Tooltip
                           label={numberFormat(contact.number)}
                           aria-label="contact number"
+                          key={contact.id}
                         >
                           <Tag
                             size="sm"
-                            key={contact.id}
                             borderRadius="md"
                             variant="solid"
                             colorScheme="green"
@@ -230,7 +230,7 @@ const CreateBroadcastPage: React.FC = () => {
               <Recipients
                 onNext={handleGetContacts}
                 hasMore={isFetching ? false : hasMore}
-                onEnter={handleReset}
+                onEnter={handleSearchEnter}
               />
             )}
           </GridItem>
