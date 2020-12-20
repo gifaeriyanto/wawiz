@@ -1,5 +1,6 @@
 import { Alert, AlertIcon, Box, Image, Link as CLink } from '@chakra-ui/react';
-import { waQrCode, waState, waStateFormatted } from 'atoms/waState';
+import { useQrCode } from 'api/qrCode';
+import { waState, waStateFormatted } from 'atoms/waState';
 import Blocker from 'components/blocker';
 import Navbar from 'layouts/navbar';
 import Sidebar from 'layouts/sidebar';
@@ -10,25 +11,7 @@ import { API } from 'utils/api';
 const Layouts: React.FC = ({ children }) => {
   const [isReady, setIsReady] = useState(false);
   const waStatus = useRecoilValue(waStateFormatted).toLowerCase();
-  const qrCode = useRecoilValue(waQrCode);
-
-  const handleRefreshQrCode = useRecoilCallback(
-    ({ set }) => () => {
-      if (waStatus !== 'connected') {
-        API.get('/qr-code').then(({ data }) => {
-          set(waQrCode, data.qrCode);
-        });
-      } else {
-        set(waQrCode, '');
-      }
-    },
-    [waStatus],
-  );
-
-  useEffect(() => {
-    const intervalID = setInterval(handleRefreshQrCode, 2000);
-    return () => clearInterval(intervalID);
-  }, [handleRefreshQrCode]);
+  const { data: qrCode } = useQrCode(waStatus);
 
   useEffect(() => {
     API.get(`/start`).finally(() => {
