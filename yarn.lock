@@ -14896,10 +14896,10 @@ vendors@^1.0.0:
   resolved "https://registry.yarnpkg.com/vendors/-/vendors-1.0.4.tgz#e2b800a53e7a29b93506c3cf41100d16c4c4ad8e"
   integrity sha512-/juG65kTL4Cy2su4P8HjtkTxk6VmJDiOPBufWniqQ6wknac6jNiXS9vU+hO3wgusiyqWlzTbVHi0dyJqRONg3w==
 
-venom-bot@^2.2.1:
-  version "2.2.1"
-  resolved "https://registry.yarnpkg.com/venom-bot/-/venom-bot-2.2.1.tgz#361d95d460fe68f6f3ef1b969ce27e8d21af7461"
-  integrity sha512-rwBI50cVq6qaGCkfF3+jQ33MBxE/7NoxMsfn+rMPL8CG4m1X+IaBQ3jvF4cLSqJr9/pI49MzCG6R2DU0rY85wg==
+venom-bot@^2.2.2:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/venom-bot/-/venom-bot-2.2.2.tgz#dad4b1259d0c28ce5a2848155174c2400031a476"
+  integrity sha512-AyaNn8+HohJvovfCzxH6tJf3MQBiXs4VKGR/NKQB7Y6BxnOppR+zd3We/P7Be/O5HDJ8snw4gYAQqlxnkWbhCA==
   dependencies:
     atob "^2.1.2"
     axios "^0.21.0"
