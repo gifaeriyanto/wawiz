@@ -38,6 +38,7 @@ export interface CreateBroadcastFormData {
 interface BroadcastFormData {
   id: string;
   message: string;
+  filepath: string;
 }
 
 const CreateBroadcastPage: React.FC = () => {
@@ -113,6 +114,7 @@ const CreateBroadcastPage: React.FC = () => {
       API.post('/send-message', {
         id: contactsSelected[count - 1].number,
         message: formData.message,
+        filepath: formData.filepath,
       })
         .then((res) => {
           console.log(res);
@@ -195,6 +197,7 @@ const CreateBroadcastPage: React.FC = () => {
                     </Box>
                   ) : null}
                 </FormControl>
+
                 <FormControl id="message" isInvalid={errors.message}>
                   <FormLabel>Message</FormLabel>
                   <Textarea
@@ -209,6 +212,24 @@ const CreateBroadcastPage: React.FC = () => {
                     })}
                   />
                   <FormErrorMessage>{errors.message?.message}</FormErrorMessage>
+                </FormControl>
+
+                <FormControl id="filepath" isInvalid={errors.filepath}>
+                  <FormLabel>Image</FormLabel>
+                  <Input
+                    isDisabled={isSending}
+                    type="text"
+                    name="filepath"
+                    placeholder="Your image url"
+                    autoComplete="filepath"
+                    ref={register({
+                      pattern: {
+                        value: /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/,
+                        message: errorMessages({ attr: 'image' }).url,
+                      },
+                    })}
+                  />
+                  <FormErrorMessage>{errors.id?.message}</FormErrorMessage>
                 </FormControl>
               </VStack>
               <Button
