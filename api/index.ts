@@ -1,4 +1,5 @@
 import { Whatsapp } from 'venom-bot';
+import { StoreKey } from './store';
 import waUtils from './whatsapp';
 
 // tslint:disable: no-var-requires
@@ -11,6 +12,9 @@ const store = new Store();
 
 export const app = express();
 let client: Whatsapp | undefined;
+let token = store.get(StoreKey.token).WASecretBundle
+  ? store.get(StoreKey.token)
+  : undefined;
 
 app.use(
   cors({
@@ -36,7 +40,7 @@ export const createServer = (electronApp: any) => {
   app.get('/start', (_req: any, res: any) => {
     if (!client) {
       waUtils
-        .sessionCreate(store.get('token'))
+        .sessionCreate(token)
         .then((newClient) => {
           client = newClient;
           res.json(electronApp.resToClient({ success: true }));
@@ -67,12 +71,16 @@ export const createServer = (electronApp: any) => {
   app.get('/token', (_req: any, res: any) => {
     client
       ?.getSessionTokenBrowser()
-      .then((token) => {
+      .then((newToken) => {
         if (token.WASecretBundle) {
-          store.set('token', token);
+          store.set(StoreKey.token, newToken);
+          token = newToken as any;
         }
         res.json(
-          electronApp.resToClient({ success: true, token: store.get('token') }),
+          electronApp.resToClient({
+            success: true,
+            token: newToken,
+          }),
         );
       })
       .catch((error) => {
@@ -190,6 +198,25 @@ export const createServer = (electronApp: any) => {
             success: false,
             message: `Error sending to ${chatId}`,
             data: req.body,
+          }),
+        );
+      });
+  });
+
+  app.get('/use-here', async (_req: any, res: any) => {
+    client
+      ?.useHere()
+      .then(() => {
+        res.json(
+          electronApp.resToClient({
+            success: true,
+          }),
+        );
+      })
+      .catch(() => {
+        res.json(
+          electronApp.resToClient({
+            success: false,
           }),
         );
       });
