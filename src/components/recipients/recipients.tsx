@@ -73,6 +73,7 @@ const Recipients: React.FC<RecipientsProps> = ({
           },
         } as any
       }
+      _first={{ borderTop: 'none' }}
       key={contact.id}
       onClick={() => handleCheckOne(contact.id)}
     >
@@ -119,10 +120,13 @@ const Recipients: React.FC<RecipientsProps> = ({
             borderRadius="none"
             borderX="none"
             borderTop="none"
+            borderBottomWidth="2px"
+            borderColor="gray.200"
             value={searchQuery}
             onChange={handleSearch}
             onKeyDown={handleSearchEnter}
             pl="36px"
+            _focus={{ boxShadow: 'none', borderColor: 'gray.400' }}
           />
         </InputGroup>
       </Box>
