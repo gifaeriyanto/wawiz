@@ -74,7 +74,7 @@ const CreateBroadcastPage: React.FC = () => {
     setContactsSelected(newContacts);
   };
 
-  const handleGetContacts = (_page: number, query?: string) => {
+  const handleGetContacts = () => {
     if (!hasMore) {
       return;
     }

@@ -22,7 +22,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { numberFormat } from 'utils/numberFormat';
 
 export interface RecipientsProps {
-  onNext: (page: number, query?: string) => void;
+  onNext: (page: number) => void;
   onEnter: (query: string) => void;
   hasMore: boolean;
 }
