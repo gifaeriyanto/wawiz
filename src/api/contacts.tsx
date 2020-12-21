@@ -10,7 +10,7 @@ export interface UseContactsParams {
 
 export interface UseContactsResponse {
   hasMore: boolean;
-  data: RecipientData[];
+  contacts: RecipientData[];
   totalData: number;
   totalPage: number;
 }
@@ -22,7 +22,7 @@ export const useContacts = (params: UseContactsParams) => {
       const res: AxiosResponse<UseContactsResponse> = await API.get(
         APIPaths.contacts(params.page, params.query),
       );
-      const parsed = (res.data.data || []).map((item: any) => {
+      const parsed = (res.data.contacts || []).map((item: any) => {
         return {
           id: item.id._serialized,
           name: item.name,

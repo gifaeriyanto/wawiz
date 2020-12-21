@@ -33,8 +33,8 @@ const Layouts: React.FC = ({ children }) => {
   const handleRefresh = useRecoilCallback(
     ({ set }) => () => {
       API.get(APIPaths.connectionState).then(({ data }) => {
-        if (data.status) {
-          set(waState, data.status);
+        if (data.connectionState) {
+          set(waState, data.connectionState);
         }
       });
     },

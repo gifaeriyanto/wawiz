@@ -7,6 +7,7 @@ const express = require('express');
 const Store = require('electron-store');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const timeout = require('connect-timeout');
 
 const store = new Store();
 
@@ -25,17 +26,26 @@ app.use(
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const haltOnTimedout = (req: any, _res: any, next: any) => {
+  if (!req.timedout) next();
+};
+
 export const createServer = (electronApp: any) => {
-  app.get('/connection-state', (_req: any, res: any) => {
-    client
-      ?.getConnectionState()
-      .then((status) => {
-        res.json(electronApp.resToClient({ success: true, status }));
-      })
-      .catch((error) => {
-        res.json(electronApp.resToClient({ success: false, error }));
-      });
-  });
+  app.get(
+    '/connection-state',
+    timeout('5s'),
+    haltOnTimedout,
+    (_req: any, res: any) => {
+      client
+        ?.getConnectionState()
+        .then((connectionState) => {
+          res.json(electronApp.resToClient({ connectionState }));
+        })
+        .catch((error) => {
+          res.status(400).json(electronApp.resToClient({ error }));
+        });
+    },
+  );
 
   app.get('/start', (_req: any, res: any) => {
     if (!client) {
@@ -43,34 +53,33 @@ export const createServer = (electronApp: any) => {
         .sessionCreate(token)
         .then((newClient) => {
           client = newClient;
-          res.json(electronApp.resToClient({ success: true }));
+          res.json(electronApp.resToClient({ message: 'Starting...' }));
         })
         .catch((error) => {
-          res.json(electronApp.resToClient({ success: false, error }));
+          res.status(400).json(electronApp.resToClient({ error }));
         });
     } else {
       res.json(
         electronApp.resToClient({
-          success: true,
           message: 'Client is exist',
         }),
       );
     }
   });
 
-  app.get('/qr-code', (_req: any, res: any) => {
+  app.get('/qr-code', timeout('5s'), haltOnTimedout, (_req: any, res: any) => {
     client
       ?.waitForQrCodeScan((qrCode) => {
         if (qrCode) {
-          res.json(electronApp.resToClient({ success: true, qrCode }));
+          res.json(electronApp.resToClient({ qrCode }));
         }
       })
       .catch((error) => {
-        res.json(electronApp.resToClient({ success: false, error }));
+        res.status(400).json(electronApp.resToClient({ error }));
       });
   });
 
-  app.get('/token', (_req: any, res: any) => {
+  app.get('/token', timeout('5s'), haltOnTimedout, (_req: any, res: any) => {
     client
       ?.getSessionTokenBrowser()
       .then((newToken) => {
@@ -80,13 +89,12 @@ export const createServer = (electronApp: any) => {
         }
         res.json(
           electronApp.resToClient({
-            success: true,
             token: newToken,
           }),
         );
       })
       .catch((error) => {
-        res.json(electronApp.resToClient({ success: false, error }));
+        res.status(400).json(electronApp.resToClient({ error }));
       });
   });
 
@@ -101,11 +109,11 @@ export const createServer = (electronApp: any) => {
             participants: groupMetadata.participants.length,
           };
         });
-        res.json(electronApp.resToClient({ success: true, data }));
+        res.json(electronApp.resToClient({ groups: data }));
       })
-      .catch((error) =>
-        res.json(electronApp.resToClient({ success: false, error })),
-      );
+      .catch((error) => {
+        res.status(400).json(electronApp.resToClient({ error }));
+      });
   });
 
   app.get('/group-members/:id', (req: any, res: any) => {
@@ -119,12 +127,12 @@ export const createServer = (electronApp: any) => {
             name,
           }));
         res.json(
-          electronApp.resToClient({ success: true, count: data.length, data }),
+          electronApp.resToClient({ count: data.length, members: data }),
         );
       })
-      .catch((error) =>
-        res.json(electronApp.resToClient({ success: false, error })),
-      );
+      .catch((error) => {
+        res.status(400).json(electronApp.resToClient({ error }));
+      });
   });
 
   app.get('/contacts/:page/:query?', (req: any, res: any) => {
@@ -151,25 +159,23 @@ export const createServer = (electronApp: any) => {
 
         res.json(
           electronApp.resToClient({
-            success: true,
             count: data.length,
-            data: dataPerPage,
+            contacts: dataPerPage,
             totalData,
             totalPage,
             hasMore: req.params.page < totalPage,
           }),
         );
       })
-      .catch((error) =>
-        res.json(electronApp.resToClient({ success: false, error })),
-      );
+      .catch((error) => {
+        res.status(400).json(electronApp.resToClient({ error }));
+      });
   });
 
   app.get('/reset', (_req: any, res: any) => {
     client = undefined;
     res.json(
       electronApp.resToClient({
-        success: true,
         message: 'Client removed',
       }),
     );
@@ -186,18 +192,11 @@ export const createServer = (electronApp: any) => {
         if (filepath) {
           client?.sendImage(chatId, filepath);
         }
-        res.json(
-          electronApp.resToClient({
-            success: true,
-            message: `Successfully sent message to ${chatId}`,
-            data: req.body,
-          }),
-        );
+        res.json(electronApp.resToClient(req.body));
       })
       .catch(() => {
         res.json(
-          electronApp.resToClient({
-            success: false,
+          electronApp.status(400).resToClient({
             message: `Error sending to ${chatId}`,
             data: req.body,
           }),
@@ -215,12 +214,8 @@ export const createServer = (electronApp: any) => {
           }),
         );
       })
-      .catch(() => {
-        res.json(
-          electronApp.resToClient({
-            success: false,
-          }),
-        );
+      .catch((error) => {
+        res.status(400).json(electronApp.resToClient({ error }));
       });
   });
 
