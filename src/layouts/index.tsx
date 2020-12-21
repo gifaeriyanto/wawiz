@@ -1,5 +1,15 @@
-import { Alert, AlertIcon, Box, Image, Link as CLink } from '@chakra-ui/react';
+import {
+  Alert,
+  AlertIcon,
+  Box,
+  Button,
+  HStack,
+  Image,
+  Link as CLink,
+  Text,
+} from '@chakra-ui/react';
 import { useQrCode } from 'api/qrCode';
+import { authState } from 'atoms/auth';
 import { waState, waStateFormatted } from 'atoms/waState';
 import Blocker from 'components/blocker';
 import Navbar from 'layouts/navbar';
@@ -7,6 +17,7 @@ import Sidebar from 'layouts/sidebar';
 import React, { useEffect, useState } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
 import { API } from 'utils/api';
+import { auth } from 'utils/firebase';
 
 const Layouts: React.FC = ({ children }) => {
   const [isReady, setIsReady] = useState(false);
@@ -37,6 +48,17 @@ const Layouts: React.FC = ({ children }) => {
     }
   }, [handleRefresh, isReady]);
 
+  const handleLogout = useRecoilCallback(({ reset }) => () => {
+    auth.signOut().then(() => {
+      reset(waState);
+      reset(authState);
+    });
+  });
+
+  const handleUseHere = () => {
+    API.get('/use-here');
+  };
+
   const renderBlocker = () => {
     if (qrCode) {
       return (
@@ -65,6 +87,29 @@ const Layouts: React.FC = ({ children }) => {
 
     if (waStatus === 'initializing...') {
       return <Blocker isLoading>Initializing...</Blocker>;
+    }
+
+    if (waStatus === 'conflict') {
+      return (
+        <Blocker>
+          <Box>
+            <Text maxW="400px" textAlign="center">
+              Whatsapp is open on another computer or browser. Click "Use Here"
+              to use this app!
+            </Text>
+            <HStack justify="center" mt={6}>
+              <Button onClick={handleLogout}>Logout</Button>
+              <Button
+                colorScheme="green"
+                onClick={handleUseHere}
+                isLoading={waStatus !== 'conflict'}
+              >
+                Use Here
+              </Button>
+            </HStack>
+          </Box>
+        </Blocker>
+      );
     }
 
     return null;
