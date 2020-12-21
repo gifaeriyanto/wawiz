@@ -51,17 +51,16 @@ const CreateBroadcastPage: React.FC = () => {
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
-  const toast = useToast();
-
   const { data, isFetching } = useContacts({ page, query: searchQuery });
-
-  // Send interval
   const [isSending, setIsSending] = useState(false);
   const [count, setCount] = useState(0);
   const [formData, setFormData] = useState<BroadcastFormData | undefined>();
+  const toast = useToast();
 
   const handleSearchEnter = (query: string) => {
-    setContacts([]);
+    if (query) {
+      setContacts([]);
+    }
     setPage(1);
     setSearchQuery(query);
   };
@@ -76,7 +75,6 @@ const CreateBroadcastPage: React.FC = () => {
   };
 
   const handleGetContacts = (_page: number, query?: string) => {
-    console.log({ query });
     if (!hasMore) {
       return;
     }
@@ -130,6 +128,7 @@ const CreateBroadcastPage: React.FC = () => {
               status: 'success',
               duration: 8000,
               isClosable: true,
+              position: 'top-right',
             });
           }
         });
