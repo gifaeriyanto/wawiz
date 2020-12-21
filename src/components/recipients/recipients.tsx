@@ -123,7 +123,6 @@ const Recipients: React.FC<RecipientsProps> = ({
             onChange={handleSearch}
             onKeyDown={handleSearchEnter}
             pl="36px"
-            _focus={{ boxShadow: 'none' }}
           />
         </InputGroup>
       </Box>

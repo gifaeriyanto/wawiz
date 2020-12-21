@@ -39,7 +39,13 @@ const Navbar: React.FC = () => {
           Create a Broadcast
         </Button>
         <Menu>
-          <MenuButton as={Button} variant="ghost" size="sm" fontSize="xl">
+          <MenuButton
+            as={Button}
+            variant="ghost"
+            colorScheme="green"
+            size="sm"
+            fontSize="xl"
+          >
             <RiArrowDownSLine />
           </MenuButton>
           <MenuList>

@@ -35,7 +35,6 @@ const PasswordInput = forwardRef<InputProps, 'input'>((props, ref) => {
           onClick={handleClick}
           color="gray.400"
           variant="ghost"
-          _focus={{ boxShadow: 'none' }}
         >
           {show ? <RiEyeCloseLine /> : <RiEyeLine />}
         </Button>

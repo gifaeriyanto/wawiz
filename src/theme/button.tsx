@@ -14,8 +14,10 @@ const ButtonTheme: StyleConfig = {
     },
   },
   variants: {
-    link: {
-      fontWeight: '500',
+    ghost: {
+      _focus: {
+        boxShadow: 'none',
+      },
     },
   },
   defaultProps: {
