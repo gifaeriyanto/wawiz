@@ -130,7 +130,7 @@ const Recipients: React.FC<RecipientsProps> = ({
       <Box overflowY="auto" maxH="calc(100vh - 310px)">
         <InfiniteScroll
           pageStart={0}
-          loadMore={(page) => onNext(page, searchQuery)}
+          loadMore={onNext}
           hasMore={hasMore}
           loader={
             <Box
