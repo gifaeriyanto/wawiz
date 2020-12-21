@@ -26,7 +26,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 export const createServer = (electronApp: any) => {
-  app.get('/', async (_req: any, res: any) => {
+  app.get('/connection-state', async (_req: any, res: any) => {
     client
       ?.getConnectionState()
       .then((status) => {

@@ -6,8 +6,8 @@ export const API = Axios.create({
 });
 
 export const APIPaths = {
-  connectionState: '/',
   startSession: '/start',
+  connectionState: '/connection-state',
   contacts: (page: number, query: string) => `/contacts/${page}/${query}`,
   useHere: '/use-here',
   qrCode: '/qr-code',
