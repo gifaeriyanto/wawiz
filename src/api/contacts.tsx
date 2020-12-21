@@ -1,7 +1,7 @@
 import { AxiosResponse } from 'axios';
 import { RecipientData } from 'interfaces/broadcast';
 import { useQuery } from 'react-query';
-import { API } from 'utils/api';
+import { API, APIPaths } from 'utils/api';
 
 export interface UseContactsParams {
   page: number;
@@ -20,7 +20,7 @@ export const useContacts = (params: UseContactsParams) => {
     ['contactsData', params],
     async () => {
       const res: AxiosResponse<UseContactsResponse> = await API.get(
-        `/contacts/${params.page}/${params.query}`,
+        APIPaths.contacts(params.page, params.query),
       );
       const parsed = (res.data.data || []).map((item: any) => {
         return {

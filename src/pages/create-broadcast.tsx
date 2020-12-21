@@ -25,7 +25,7 @@ import Layouts from 'layouts';
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { API } from 'utils/api';
+import { API, APIPaths } from 'utils/api';
 import { numberFormat } from 'utils/numberFormat';
 import { errorMessages } from 'utils/validationMessages';
 
@@ -109,7 +109,7 @@ const CreateBroadcastPage: React.FC = () => {
 
   useEffect(() => {
     if (formData && count) {
-      API.post('/send-message', {
+      API.post(APIPaths.sendMessage, {
         id: contactsSelected[count - 1].number,
         message: formData.message,
         filepath: formData.filepath,

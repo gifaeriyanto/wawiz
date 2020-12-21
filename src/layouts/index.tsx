@@ -16,7 +16,7 @@ import Navbar from 'layouts/navbar';
 import Sidebar from 'layouts/sidebar';
 import React, { useEffect, useState } from 'react';
 import { useRecoilCallback, useRecoilValue } from 'recoil';
-import { API } from 'utils/api';
+import { API, APIPaths } from 'utils/api';
 import { auth } from 'utils/firebase';
 
 const Layouts: React.FC = ({ children }) => {
@@ -25,14 +25,14 @@ const Layouts: React.FC = ({ children }) => {
   const { data: qrCode } = useQrCode(waStatus);
 
   useEffect(() => {
-    API.get(`/start`).finally(() => {
+    API.get(APIPaths.startSession).finally(() => {
       setIsReady(true);
     });
   }, []);
 
   const handleRefresh = useRecoilCallback(
     ({ set }) => () => {
-      API.get('/').then(({ data }) => {
+      API.get(APIPaths.connectionState).then(({ data }) => {
         if (data.status) {
           set(waState, data.status);
         }
@@ -56,7 +56,7 @@ const Layouts: React.FC = ({ children }) => {
   });
 
   const handleUseHere = () => {
-    API.get('/use-here');
+    API.get(APIPaths.useHere);
   };
 
   const renderBlocker = () => {
