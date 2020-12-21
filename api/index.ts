@@ -33,7 +33,7 @@ const haltOnTimedout = (req: any, _res: any, next: any) => {
 export const createServer = (electronApp: any) => {
   app.get(
     '/connection-state',
-    timeout('5s'),
+    timeout('2s'),
     haltOnTimedout,
     (_req: any, res: any) => {
       client
@@ -67,7 +67,7 @@ export const createServer = (electronApp: any) => {
     }
   });
 
-  app.get('/qr-code', timeout('5s'), haltOnTimedout, (_req: any, res: any) => {
+  app.get('/qr-code', timeout('2s'), haltOnTimedout, (_req: any, res: any) => {
     client
       ?.waitForQrCodeScan((qrCode) => {
         if (qrCode) {
@@ -79,7 +79,7 @@ export const createServer = (electronApp: any) => {
       });
   });
 
-  app.get('/token', timeout('5s'), haltOnTimedout, (_req: any, res: any) => {
+  app.get('/token', timeout('2s'), haltOnTimedout, (_req: any, res: any) => {
     client
       ?.getSessionTokenBrowser()
       .then((newToken) => {
