@@ -26,7 +26,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 export const createServer = (electronApp: any) => {
-  app.get('/connection-state', async (_req: any, res: any) => {
+  app.get('/connection-state', (_req: any, res: any) => {
     client
       ?.getConnectionState()
       .then((status) => {
@@ -60,8 +60,10 @@ export const createServer = (electronApp: any) => {
 
   app.get('/qr-code', (_req: any, res: any) => {
     client
-      ?.waitForQrCodeScan(async (qrCode) => {
-        res.json(electronApp.resToClient({ success: true, qrCode }));
+      ?.waitForQrCodeScan((qrCode) => {
+        if (qrCode) {
+          res.json(electronApp.resToClient({ success: true, qrCode }));
+        }
       })
       .catch((error) => {
         res.json(electronApp.resToClient({ success: false, error }));
@@ -163,7 +165,7 @@ export const createServer = (electronApp: any) => {
       );
   });
 
-  app.get('/reset', async (_req: any, res: any) => {
+  app.get('/reset', (_req: any, res: any) => {
     client = undefined;
     res.json(
       electronApp.resToClient({
@@ -173,13 +175,13 @@ export const createServer = (electronApp: any) => {
     );
   });
 
-  app.post('/send-message', async (req: any, res: any) => {
+  app.post('/send-message', (req: any, res: any) => {
     const { id, message, filepath } = req.body;
     const chatId = id + '@c.us';
 
     client
       ?.sendText(chatId, message)
-      .then(async () => {
+      .then(() => {
         console.log('Successfully sent message to', chatId);
         if (filepath) {
           client?.sendImage(chatId, filepath);
@@ -203,7 +205,7 @@ export const createServer = (electronApp: any) => {
       });
   });
 
-  app.get('/use-here', async (_req: any, res: any) => {
+  app.get('/use-here', (_req: any, res: any) => {
     client
       ?.useHere()
       .then(() => {
